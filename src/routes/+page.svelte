@@ -134,9 +134,9 @@
 	<div style="position: relative; display: flex; width: min(80vw, 66.5798045603vh);">
 		<img id="map" src="images/ga_map_counties.png" alt="" style="width: 100%"/>
 
-		<!-- {#each fake_600_coords as coords} -->
-		<!-- 	<img src="images/map_pin.png" alt="map pin" class={{ pin: true, 'bad-pin': true, bad: stage >= s.ga_grey, invis: stage >= s.farms }} style={`width: 26px; position: absolute; top: ${coords.x * 100}%; left: ${coords.y * 100}%; transform: translate(-50%, -100%);`} /> -->
-		<!-- {/each} -->
+		{#each fake_600_coords as coords}
+			<img src="images/map_pin.png" alt="map pin" class={{ pin: true, 'bad-pin': true, bad: stage >= s.ga_grey, invis: stage >= s.farms }} style={`width: 26px; position: absolute; top: ${coords.x * 100}%; left: ${coords.y * 100}%; transform: translate(-50%, -100%);`} />
+		{/each}
 
 		{#each farms as farm}
 			<img src="images/map_pin.png" alt="map pin" class={{pin: true, good: stage >= s.farms}} style={`cursor: pointer; width: 26px; position: absolute; top: ${farm.coords.x * 100}%; left: ${farm.coords.y * 100}%; transform: translate(-50%, -100%);`} on:click={() => { farm_open = farm.name; }} />
