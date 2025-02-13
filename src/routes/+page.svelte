@@ -63,41 +63,33 @@
 		},
 		{
 			name: 'Gilliard',
-			coords: p(31.16376054153567, -81.62389074555118),
+			coords: wp(31.16376054153567, -81.62389074555118),
 		},
 		{
 			name: 'Williams',
-			coords: p(30.91402190426384, -83.85165546143168),
+			coords: wp(30.91402190426384, -83.85165546143168),
 		},
 		{
 			name: 'Cooper',
-			coords: p(32.975456566583894, -81.75939468755824),
+			coords: wp(32.975456566583894, -81.75939468755824),
 		},
 		{
 			name: 'Stephens',
-			coords: p(31.51458649234062, -84.00240727678029),
+			coords: wp(31.51458649234062, -84.00240727678029),
 		},
 		{
 			name: 'Thompson',
-			coords: p(33.47800464351064, -82.06263032165144),
+			coords: wp(33.47800464351064, -82.06263032165144),
 		},
 		{
 			name: 'Gouch',
-			coords: p(33.08128853705585, -82.01175868075279
+			coords: wp(33.08128853705585, -82.01175868075279
 ),
 		},
 		{
 			name: 'Toomer',
-			coords: p(32.4540073170362, -83.72931569977366),
+			coords: wp(32.4540073170362, -83.72931569977366),
 		},
-		// {
-		// 	name: '',
-		// 	coords: p(),
-		// },
-		// {
-		// 	name: '',
-		// 	coords: p(),
-		// },
 	];
 </script>
 
@@ -105,10 +97,10 @@
 	<h1>Black Farmer's Network</h1>
 
 	<div style="position: relative; display: flex; width: 80vw;">
-		<img src="/images/ga_map_counties.png" alt="" />
+		<img src="images/ga_map_counties.png" alt="" />
 
 		{#each farms as farm}
-			<img src="/images/map_pin.png" alt="map pin" style={`width: 26px; position: absolute; top: ${farm.coords.x * 100}%; left: ${farm.coords.y * 100}%; transform: translate(-50%, -100%);`}>
+			<img src="images/map_pin.png" alt="map pin" style={`width: 26px; position: absolute; top: ${farm.coords.x * 100}%; left: ${farm.coords.y * 100}%; transform: translate(-50%, -100%);`}>
 		{/each}
 	</div>
 </div>
