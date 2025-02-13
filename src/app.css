@@ -1,1 +1,36 @@
 @import 'tailwindcss';
+
+* {
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+.pin {
+	animation: 
+		pin-fall 1s normal ease-in,
+		pin-bounce 1s infinite ease-in-out;
+}
+
+@keyframes pin-bounce {
+  0%  { scale: 1 1 }
+  50%  { scale: 1 0.95 }
+  100% { scale: 1 1 }
+}
+
+@keyframes pin-fall {
+  0%  { translate: 0 -80vh }
+  100%  { translate: 0 0 }
+}
+
+.bad-pin {
+	transition: all 2s ease-in-out;
+	filter: grayscale(0);
+	opacity: 1;
+}
+
+.bad {
+	filter: grayscale(1);
+}
+
+.invis {
+	opacity: 0;
+}
