@@ -5,9 +5,11 @@
 }
 
 .pin {
-	animation: 
-		pin-fall 1s normal ease-in,
-		pin-bounce 1s infinite ease-in-out;
+	animation: pin-fall 1s normal ease-in;
+}
+
+.pin .good {
+	animation: pin-bounce 1s infinite ease-in-out;
 }
 
 @keyframes pin-bounce {
@@ -29,8 +31,44 @@
 
 .bad {
 	filter: grayscale(1);
+	opacity: 0.75;
 }
 
 .invis {
 	opacity: 0;
 }
+
+.overlay-container {
+	color: rgb(0, 121, 52);
+}
+
+.overlay-contents {
+	background-color: white;
+}
+
+.text-chunk {
+	height: 10vh;
+}
+
+.continue-btn {
+	cursor: pointer;
+	text-decoration: none;
+	font-family: Gelasio;
+
+	/* box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); */
+
+	animation: btn-bounce 3s infinite ease-in-out;
+
+	font-size: 36px;
+}
+
+.continue-btn:hover {
+	color: rgb(0, 121, 52);
+}
+
+@keyframes btn-bounce {
+  0%  { scale: 1 1 }
+  50%  { scale: 1 0.8 }
+  100% { scale: 1 1 }
+}
+
