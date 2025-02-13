@@ -115,11 +115,40 @@
 
 	let stage_i = 0;
 	let stage = 0;
+	function is_last_stage(stage_i: number) : boolean {
+		return stage_i === Object.entries(s).length - 1;
+	}
 	function next_stage() {
-		console.log('next_stage!');
-		stage = Object.entries(s)[++stage_i][1];
+		if (is_last_stage(stage_i)) {
+			stage_i = 0;
+			stage = 0;
+		} else {
+			stage_i++;
+			stage = Object.entries(s)[stage_i][1];
+		}
+	}
 
-		console.log(`Moving to next stage: ${stage}  [${stage_i}]`);
+	function page_text(stage: number): string {
+		switch (stage) {
+			case s.usa: return 'Over the last century, the USA has seen a decrease in Black farm operators: from 20% to less than 1%! [TODO: graph/chart visualization of the USDA census data showing this change over time]';
+			case s.ga: return 'Now, let\'s take a closer look at Georgia...';
+			case s.ga_centenial_award: return 'The Georgia Centennial Farm Award honours those upholding Georgia\'s agricultural history by maintaining working farms for more than 100 years';
+			case s.ga_centenial_drop: return 'But... of the roughly 600 recipients of the award';
+			case s.ga_grey: return 'Only 15 of those farms have been Black-owned';
+			case s.farms: return 'But the only way to improve the situation is to see what they\'ve doing right! Click on each pin to see more info on the farm!';
+		}
+		return '...';
+	}
+
+	function on_key_down(e: KeyboardEvent) {
+        // `keyup` is the reverse, it fires whenever the physical key was let.
+        // go after being held down
+
+        // Just like our `keydown` handler, we need to update the boolean
+        // flags, but in the opposite direction.
+        switch (e.key) {
+			case 'Escape': farm_open = undefined;
+		}
 	}
 </script>
 
@@ -128,23 +157,43 @@
 	<link href='https://fonts.googleapis.com/css?family=Gelasio' rel='stylesheet'>
 </svelte:head>
 
-<div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-	<h1>Black Farmer's Network</h1>
+<svelte:window
+    on:keydown={on_key_down}
+/>
 
-	<div style="position: relative; display: flex; width: min(80vw, 66.5798045603vh);">
-		<img id="map" src="images/ga_map_counties.png" alt="" style="width: 100%"/>
+<div style="width: 100%; display: flex; flex-direction: column; align-items: center;" on:click={is_last_stage(stage_i) ? undefined : next_stage}>
+	<h1 class="nav">Black Farmer's Network</h1>
 
-		{#each fake_600_coords as coords}
-			<img src="images/map_pin.png" alt="map pin" class={{ pin: true, 'bad-pin': true, bad: stage >= s.ga_grey, invis: stage >= s.farms }} style={`width: 26px; position: absolute; top: ${coords.x * 100}%; left: ${coords.y * 100}%; transform: translate(-50%, -100%);`} />
-		{/each}
+	{#if (stage < s.ga)}
+		<div style="position: relative; display: flex; width: min(80vw, 120.170212766vh);">
+			<img id="map" src="images/usa_map.png" alt="" style="width: 100%"/>
+		</div>
+	{/if}
+	{#if (stage >= s.ga)}
+		<div style="position: relative; display: flex; width: min(80vw, 66.5798045603vh);">
+			<img id="map" src="images/ga_map_counties.png" alt="" style="width: 100%"/>
 
-		{#each farms as farm}
-			<img src="images/map_pin.png" alt="map pin" class={{pin: true, good: stage >= s.farms}} style={`cursor: pointer; width: 26px; position: absolute; top: ${farm.coords.x * 100}%; left: ${farm.coords.y * 100}%; transform: translate(-50%, -100%);`} on:click={() => { farm_open = farm.name; }} />
-		{/each}
+			{#if (stage >= s.ga_centenial_drop)}
+				{#each fake_600_coords as coords}
+					<img src="images/map_pin.png" alt="map pin" class={{ pin: true, 'bad-pin': true, bad: stage >= s.ga_grey, invis: stage >= s.farms }} style={`width: 26px; position: absolute; top: ${coords.x * 100}%; left: ${coords.y * 100}%; transform: translate(-50%, -100%);`} />
+				{/each}
 
-	</div>
+				{#each farms as farm}
+					<img src="images/map_pin.png" alt="map pin" class={{pin: true, good: stage >= s.farms}} style={`cursor: pointer; width: 26px; position: absolute; top: ${farm.coords.x * 100}%; left: ${farm.coords.y * 100}%; transform: translate(-50%, -100%);`} on:click={() => { farm_open = farm.name; }} />
+				{/each}
+			{/if}
+
+			{#if (stage === s.ga_centenial_award)}
+				<img src="images/badge.png" alt="Centennial Award" style="width: 20vw; position: fixed; top: 50vh; left: 5vw; translate: 0 -50%;">
+			{/if}
+
+		</div>
+	{/if}
 
 	{#if (farm_open != null)}
+		<div class="modal-back" on:click={() => {farm_open = undefined;}}></div>
+		<div class="farm-modal">
+		<span class="close" on:click={() => {farm_open = undefined;}}>&times;</span>
 		{#if (farm_open === 'Rountre')}
 			About the Farm
 Founded in 1891, the John and Emma Jane Rountree Farm is a historic African American family farm that has remained in the Rountree family for over a century.
@@ -310,13 +359,17 @@ Education and Family Contributions: Kahlid was one of 12 children raised on the 
 Present Day
 The farm, once known for rice production, now spans 75 acres, cultivating fruits, vegetables, soybeans, and peanuts. Historic grapevines, fig, pecan, and walnut trees, some over 100 years old, continue to bear fruit, preserving the farm’s agricultural legacy.
 		{/if}
+			<div style="width: 100%; display: flex; align-items: center; justify-content: center;">
+				<img src="images/todo_image.png" alt="" style="width: 20vw">
+			</div>
+		</div>
 	{/if}
 
 	<div class="text-chunk">
-		Hi there
+		{page_text(stage)}
 	</div>
 
 	<a class="continue-btn" on:click={next_stage}>
-		CONTINUE
+		{is_last_stage(stage_i) ? 'START OVER' : 'CONTINUE'}
 	</a>
 </div>
