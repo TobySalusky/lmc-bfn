@@ -310,7 +310,7 @@
 			case s.ga_grey:
 				return 'Only 15 of those farms have been Black-owned';
 			case s.farms:
-				return "But the only way to improve the situation is to see what they've doing right! Click on each pin to see more info on the farm!";
+				return "But the first step to improving the situation is learning about it yourself! Click on each pin to see more info on the farm!";
 		}
 		return '...';
 	}
