@@ -1,4 +1,203 @@
 <script lang="ts">
+	import LineGraph from "../LineGraph.svelte";
+	// @ts-ignore
+	import Slider from '@bulatdashiev/svelte-slider';
+
+	const graph_years = [
+		1900,
+		1910,
+		1920,
+		1930,
+		1940,
+		1950,
+		1959,
+		1964,
+		1969,
+		1974,
+		1978,
+		1982,
+		1987,
+		1992,
+		1997,
+		2002,
+		2007,
+		2012,
+		2017,
+		2022,
+	];
+	let value = [0, 100];
+
+	const graph_values = [
+		13.01,
+		14.03,
+		14.34,
+		14.02,
+		11.17,
+		10.39,
+		7.35,
+		5.83,
+		3.20,
+		1.97,
+		1.65,
+		1.48,
+		1.10,
+		0.98,
+		0.97,
+		1.34,
+		1.39,
+		1.58,
+		1.55,
+		1.48,
+	];
+
+	const timeline_data = [
+		{
+			year: 1933,
+			name: 'Agricultural Adjustment Act',
+			text: 'New Deal policies aim to address low crop prices by reducing farmland acreage, but lead to the displacement of many Black tenant farmers.',
+		},
+		{
+			year: 1965,
+			name: 'USDA Discrimination Report',
+			text: 'The US Commission on Civil Rights confirms that the USDA discriminates against Black farmers in loans and conservation payments.',
+		},
+		{
+			year: 1968,
+			name: 'Continued Discrimination in Loans',
+			text: 'A followup report finds ongoing bias in USDA loan distribution, worsening economic struggles for Black farmers.',
+		},
+		{
+			year: 1970,
+			name: 'Lack of Civil Rights Oversight',
+			text: 'The Commission on Civil Rights reports persistent discrimination in USDA programs, with no civil rights staff in field offices.',
+		},
+		{
+			year: 1981,
+			name: 'Black Farmers and Poverty',
+			text: 'A USDA study finds Black and minority farmers are disproportionately affected by poverty and unable to access credit.',
+		},
+		{
+			year: 1983,
+			name: 'USDA Civil Rights Office Dismantled',
+			text: 'The Reagan administration shuts down the USDA Office of Civil Rights, halting investigations into discrimination.',
+		},
+		{
+			year: 1990,
+			name: 'House Report on USDA Discrimination',
+			text: 'A House Committee investigation reveals widespread racial bias in USDA loan programs, denying funding for Black farmers.',
+		},
+		{
+			year: 1994,
+			name: 'Legal Recognition of Discrimination',
+			text: 'The US Assistant Attorney General issues a memo about the USDA\'s authority to award monetary relief to Black farmers who have suffered from discriminatory practices, opening the door for restitution and corrective measures.',
+		},
+		{
+			year: 1995,
+			name: 'GAO Report on USDA Inequality',
+			text: 'The US General Accounting Office finds the USDA fails to address racial discimination and lacks minority representation on county committees.',
+		},
+		{
+			year: 1997,
+			name: 'USDA Civil Rights Action Team Report',
+			text: 'The USDA Civil Rights Action Team publishes a report about the enduring nature of discrimination within the department.',
+		},
+		{
+			year: 1999,
+			name: 'Pigford v. Glickman Settlement',
+			text: 'The USDA compensates $1.03 billion to Black farmers affected by loan discrimination, but only a fraction of claims are accepted.',
+		},
+		{
+			year: 2001,
+			name: 'Wave of USDA Discrimination Complaints',
+			text: 'The USDA receives over 14,000 discrimination complaints from 2001 to 2008, but only finds merit in one.',
+		},
+		{
+			year: 2010,
+			name: 'Pigford Additional Settlement',
+			text: 'Congress approves a $1.25 billion settlement to compensate black farmers originally excluded from the Pigford case.',
+		},
+		{
+			year: 2019,
+			name: 'USDA Found Distorting Data',
+			text: 'An investigation finds USDA has been inflating statistics on black farmers and exaggerating their record on civil rights.  ',
+		},
+		{
+			year: 2021,
+			name: 'American Rescue Plan',
+			text: 'The American Rescue Plan Act $1.01 billion to assist socially disadvantaged farmers, ranchers, and forest landowners.',
+		},
+		{
+			year: 2022,
+			name: 'Inflation Reduction Act',
+			text: 'The Inflation Reduction Act provides over $2 billion for farmers who have experienced discrimination.',
+		},
+	];
+	let timeline_point = timeline_data[0];
+
+	function set_event_i(i: number) {
+		timeline_point = timeline_data[i];
+		value[0] = timeline_point.year - 1933;
+		set_active_graph_year(timeline_point.year);
+	}
+
+	function has_prev_event() {
+		const i = timeline_data.findIndex(({ year }) => year == timeline_point.year);
+		return i > 0;
+	}
+
+	function prev_event() {
+		const i = timeline_data.findIndex(({ year }) => year == timeline_point.year);
+		if (i === -1) { return; }
+
+		set_event_i(i - 1);
+	}
+
+	function has_next_event() {
+		const i = timeline_data.findIndex(({ year }) => year == timeline_point.year);
+		return i != -1 && i < timeline_data.length - 1;
+	}
+
+	function next_event() {
+		const i = timeline_data.findIndex(({ year }) => year == timeline_point.year);
+		if (i === -1) { return; }
+
+		set_event_i(i + 1);
+	}
+
+	const graph_data = graph_years.map((year, i) => ({
+		year, value: graph_values[i]
+	}))
+
+	let active_graph_year : number = 1910;
+	let active_graph_data = graph_data.slice(0, 0);
+	function set_active_graph_year(new_year : number) {
+		active_graph_year = new_year;
+		const timeline_upto = timeline_data.findLastIndex(({ year }) => year <= new_year);
+		if (timeline_data[timeline_upto] != null) {
+			timeline_point = timeline_data[timeline_upto];
+		}
+
+		let upto = graph_data.findLastIndex(({ year }) => year <= new_year);
+		if (upto === -1) { upto = 0; }
+
+		active_graph_data = graph_data.slice(0, upto + 1);
+		const last_good = graph_data[upto];
+
+		// interpolated final data point!
+		if (upto !== graph_data.length - 1 && last_good.year !== new_year) {
+			const next = graph_data[upto + 1];
+			const deltaValue = next.value - last_good.value;
+			const lt = (new_year - last_good.year) / (next.year - last_good.year);
+
+			active_graph_data.push({
+				year: new_year,
+				value: last_good.value + (deltaValue * lt)
+			});
+		}
+		active_graph_data = active_graph_data; // for svelte to detect change
+	}
+	set_active_graph_year(1933);
+
 	type Point = { x: number; y: number };
 	// function p_sub(p1: Point, p2: Point): Point { return { x: p1.x - p2.x, y: p1.y - p2.y }; }
 	function p(x: number, y: number): Point {
@@ -300,7 +499,7 @@
 	function page_text(stage: number): string {
 		switch (stage) {
 			case s.usa:
-				return 'Over the last century, the USA has seen a decrease in Black farm operators: from 20% to less than 1%! [TODO: graph/chart visualization of the USDA census data showing this change over time]';
+				return 'Over the last century, the USA has seen a decrease in Black farm operators: from 20% to less than 1%!';
 			case s.ga:
 				return "Now, let's take a closer look at Georgia...";
 			case s.ga_centenial_award:
@@ -326,6 +525,19 @@
 				farm_open = undefined;
 		}
 	}
+
+	let page_width = 1000;
+	let page_height = 1000;
+
+	function value_color(val: number) {
+		const lt = (1 - ((val - 0.7) / (13.2 - 0.7)));
+
+		const r = 0 + lt * 100;
+		const g = 121 + lt * -121;
+		const b = 52 + lt * -52;
+
+		return `rgb(${r}, ${g}, ${b})`;
+	}
 </script>
 
 <svelte:head>
@@ -341,13 +553,65 @@
 
 <div
 	style="width: 100%; display: flex; flex-direction: column; align-items: center;"
-	on:click={is_last_stage(stage_i) ? undefined : next_stage}
+	bind:clientWidth={page_width}
+	bind:clientHeight={page_height}
 >
-	<h1 class="nav">Black Farmer's Network</h1>
+	<!-- TODO: page click (but don't double up with continue hit!) -->
+	<!-- on:click={is_last_stage(stage_i) ? undefined : next_stage} -->
+	<div class="nav">
+		<a href="https://blackfarmersnetwork.com/" style="height: 100%">
+			<img id="logo" src="images/bfn_logo.png" alt="" style="height: 100%" />
+		</a>
+		<h1>A Legacy of Resilience: Black Farmers in America</h1>
+		<div></div>
+	</div>
 
 	{#if stage < s.ga}
-		<div style="position: relative; display: flex; width: min(80vw, 120.170212766vh);">
+		<!-- <div style="position: relative; display: flex; width: min(80vw, 120.170212766vh);"> -->
+		<div class="text-chunk" style="margin: 0; padding-block: 10px; height: auto; width: 80vw;">
+			Since 1900, the USA has seen a marked decrease in Black farm operators...
+		</div>
+
+		<div style="position: relative; display: flex; width: 50vh;">
 			<img id="map" src="images/usa_map.png" alt="" style="width: 100%" />
+
+			<span class="map-percent"  style={`color: ${value_color(active_graph_data[active_graph_data.length - 1].value)}; position: absolute; left: 50%; top: 50%; translate: -50% -50%;`}>{active_graph_data[active_graph_data.length - 1].value.toFixed(1)}%</span>
+			<span class="map-year"  style="position: absolute; left: 50%; top: 50%; translate: -50% -50%; transform: translateY(calc(5rem * 0.6))">{Math.floor(active_graph_data[active_graph_data.length - 1].year)}</span>
+		</div>
+
+		<div class="text-chunk" style="color: #333333; margin: 0; padding-block: 10px; padding-top: 20px; height: auto; width: 80vw;">
+			Explore why on the timeline below:
+		</div>
+
+		<div style="width: 80vw; display: flex; flex-direction: column; align-items: center;;">
+			<LineGraph data={active_graph_data} width={page_width * 0.8} height={page_height * 0.25} />
+			<Slider bind:value on:input={(e: any) => {set_active_graph_year(1933 + (e.detail[0] / 100) * (2022-1933)); console.log(e.detail)} } />
+
+			<div class="timeline-event">
+				<div class="timeline-title">
+					{timeline_point.name}
+				</div>
+
+				<div class="timeline-year">
+					{timeline_point.year}
+				</div>
+
+				<div class="timeline-text">
+					{timeline_point.text}
+				</div>
+			</div>
+			<div class="timeline-after">
+				{#if (has_prev_event())}
+					<a on:click={prev_event}>Prev Event</a>
+				{/if}
+				{#if (!has_prev_event())} <div></div> {/if}
+
+				{#if (has_next_event())}
+					<a on:click={next_event}>Next Event</a>
+				{/if}
+				{#if (!has_next_event())} <div></div> {/if}
+
+			</div>
 		</div>
 	{/if}
 	{#if stage >= s.ga}
@@ -438,6 +702,9 @@
 					border-radius: 10px;
 					background: #f9f9f9;
 					box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+					max-height: 60vh;
+					overflow-y: scroll;
 				}
 
 				.farm-details h2 {
@@ -470,11 +737,15 @@
 		</div>
 	{/if}
 
-	<div class="text-chunk">
-		{page_text(stage)}
-	</div>
+	{#if (stage >= s.ga)}
+		<div class="text-chunk">
+			{page_text(stage)}
+		</div>
+	{/if}
 
-	<a class="continue-btn" on:click={next_stage}>
+	<button class="continue-btn" on:click={next_stage}>
 		{is_last_stage(stage_i) ? 'START OVER' : 'CONTINUE'}
-	</a>
+	</button>
 </div>
+
+
