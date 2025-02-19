@@ -136,7 +136,7 @@
 
 	function set_event_i(i: number) {
 		timeline_point = timeline_data[i];
-		value[0] = timeline_point.year - 1933;
+		value[0] = Math.round((timeline_point.year - 1933) / (2022-1933) * 100);
 		set_active_graph_year(timeline_point.year);
 	}
 
@@ -499,17 +499,17 @@
 	function page_text(stage: number): string {
 		switch (stage) {
 			case s.usa:
-				return 'Over the last century, the USA has seen a decrease in Black farm operators: from 20% to less than 1%!';
+				// return 'Over the last century, the USA has seen a decrease in Black farm operators: from 20% to less than 1%!';
 			case s.ga:
-				return "Now, let's take a closer look at Georgia...";
+				return "Let's explore how this can be seen on the State level: Georgia's, for instance.";
 			case s.ga_centenial_award:
-				return "The Georgia Centennial Farm Award honours those upholding Georgia's agricultural history by maintaining working farms for more than 100 years";
+				return "The Georgia Centennial Farm Award honours those upholding Georgia's agricultural history by maintaining working farms for more than 100 years.";
 			case s.ga_centenial_drop:
-				return 'But... of the roughly 600 recipients of the award';
+				return 'However, of the roughly 600 recipients of the award:';
 			case s.ga_grey:
-				return 'Only 15 of those farms have been Black-owned';
+				return 'Only 15 of the awarded farms have been Black-owned.';
 			case s.farms:
-				return "But the first step to improving the situation is learning about it yourself! Click on each pin to see more info on the farm!";
+				return "It's critical that the narrative of the Black Belt farmer does not go forgotten or ignored. Learn more about each of the winners by clicking the individual Pins.";
 		}
 		return '...';
 	}
